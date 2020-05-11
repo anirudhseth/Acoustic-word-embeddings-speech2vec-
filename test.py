@@ -38,7 +38,8 @@ def split_on_silences(audio_fpath, words, end_times):
     mfccs=[librosa.feature.mfcc(wavs[i],sr=sample_rate, n_mfcc=13, norm='ortho', hop_length=int(win_shift*sample_rate), n_fft=int(win_lenth*sample_rate)) for i in range(len(wavs))]
     mfccs_extend = [np.pad(mfccs[i], ((0, 0),(0, 400 - mfccs[i].shape[1])),'constant') for i in range(len(mfccs))]
 
-    mfcc_cmvn = [speechpy.processing.cmvnw(mfccs_extend[i],win_size=301,variance_normalization=True) for i in range(len(mfccs_extend))]
+    #mfcc_cmvn = [speechpy.processing.cmvnw(mfccs_extend[i],win_size=301,variance_normalization=True) for i in range(len(mfccs_extend))]
+    mfcc_cmvn = [speechpy.processing.cmvn(mfccs_extend[i].T, variance_normalization=True).T for i in range(len(mfccs_extend))]
 
     texts = [t for t in words]
 
@@ -106,7 +107,7 @@ for set_name in ['dev-clean']:
             alignment_file.close()
 
 
-np.savez('mat1.npz', name1=tot)
+#np.savez('mat1.npz', name1=tot)
 torch.save(tot, 'Mfcc_features.pt') 
 
         
