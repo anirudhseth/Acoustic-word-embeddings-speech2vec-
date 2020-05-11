@@ -3,13 +3,14 @@ import numpy as np
 import librosa
 import os
 import warnings
+import torch
 
 warnings.filterwarnings("ignore", category=UserWarning)
 ### Go to https://github.com/CorentinJ/librispeech-alignments
 
 
-librispeech_root = "../LibriSpeech"    # Replace with yours
-librispeech_root_audio = "../LibriSpeech2"    # Replace with yours
+librispeech_root = "../LibriSpeech-alignments"    # Replace with yours
+librispeech_root_audio = "../LibriSpeech"    # Replace with yours
 
 
 def split_on_silences(audio_fpath, words, end_times):
@@ -34,9 +35,11 @@ def split_on_silences(audio_fpath, words, end_times):
 
     wavs = [wav[(start_times[t]*sample_rate).astype(np.int):(end_times[t]*sample_rate).astype(np.int)] for t in range(len(start_times))]
     mfccs=[librosa.feature.mfcc(wavs[i],sr=sample_rate, n_mfcc=13, norm='ortho', hop_length=int(win_shift*sample_rate), n_fft=int(win_lenth*sample_rate)) for i in range(len(wavs))]
+    mfccs_extend = [np.pad(mfccs[i], ((0, 0),(0, 400 - mfccs[i].shape[1])),'constant') for i in range(len(mfccs))]
+
     texts = [t for t in words]
 
-    return wavs, texts, mfccs
+    return wavs, texts, mfccs_extend
 #w=[]
 #t=[]
 #mf = []
@@ -99,5 +102,7 @@ for set_name in ['dev-clean']:
             alignment_file.close()
 
 
-np.savez('mat.npz', name1=tot)    
+np.savez('mat1.npz', name1=tot)
+torch.save(tot, 'Mfcc_features.pt') 
+
         
