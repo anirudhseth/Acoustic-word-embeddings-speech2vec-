@@ -4,6 +4,7 @@ import librosa
 import os
 import warnings
 import torch
+import speechpy
 
 warnings.filterwarnings("ignore", category=UserWarning)
 ### Go to https://github.com/CorentinJ/librispeech-alignments
@@ -37,9 +38,11 @@ def split_on_silences(audio_fpath, words, end_times):
     mfccs=[librosa.feature.mfcc(wavs[i],sr=sample_rate, n_mfcc=13, norm='ortho', hop_length=int(win_shift*sample_rate), n_fft=int(win_lenth*sample_rate)) for i in range(len(wavs))]
     mfccs_extend = [np.pad(mfccs[i], ((0, 0),(0, 400 - mfccs[i].shape[1])),'constant') for i in range(len(mfccs))]
 
+    mfcc_cmvn = [speechpy.processing.cmvnw(mfccs_extend[i],win_size=301,variance_normalization=True) for i in range(len(mfccs_extend))]
+
     texts = [t for t in words]
 
-    return wavs, texts, mfccs_extend
+    return wavs, texts, mfccs_extend, mfcc_cmvn
 #w=[]
 #t=[]
 #mf = []
@@ -88,12 +91,13 @@ for set_name in ['dev-clean']:
                 audio_fpath = os.path.join(book_dir_audio, utterance_id + '.flac')
                 
                 # Split utterances on silences
-                wavs, texts, mfccs = split_on_silences(audio_fpath, words, end_times)
+                wavs, texts, mfccs, mfcc_cmvn = split_on_silences(audio_fpath, words, end_times)
 
                 dict = {}
                 dict['waves'] = wavs
                 dict['texts'] = texts
                 dict['mfcc'] = mfccs
+                dict['mfcc_cmvn'] = mfcc_cmvn
                 dict['speaker_id'] = speaker_id
                 dict['book_id'] = book_id
                 dict['utterance_id'] = utterance_id
