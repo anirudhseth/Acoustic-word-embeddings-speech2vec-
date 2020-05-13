@@ -39,11 +39,14 @@ def split_on_silences(audio_fpath, words, end_times):
     mfccs_extend = [np.pad(mfccs[i], ((0, 0),(0, 400 - mfccs[i].shape[1])),'constant') for i in range(len(mfccs))]
 
     #mfcc_cmvn = [speechpy.processing.cmvnw(mfccs_extend[i],win_size=301,variance_normalization=True) for i in range(len(mfccs_extend))]
-    mfcc_cmvn = [speechpy.processing.cmvn(mfccs_extend[i].T, variance_normalization=True).T for i in range(len(mfccs_extend))]
+    #mfcc_cmvn = [speechpy.processing.cmvn(mfccs_extend[i].T, variance_normalization=True).T for i in range(len(mfccs_extend))]
+    ### extend cmvn on mfccs ###
+    mfcc_cmvn_modified = [speechpy.processing.cmvn(mfccs[i].T, variance_normalization=True).T for i in range(len(mfccs))]
+    
 
     texts = [t for t in words]
 
-    return wavs, texts, mfccs_extend, mfcc_cmvn
+    return wavs, texts, mfccs, mfcc_cmvn_modified
 #w=[]
 #t=[]
 #mf = []
