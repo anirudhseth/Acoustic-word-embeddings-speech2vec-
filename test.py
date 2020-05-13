@@ -5,6 +5,7 @@ import os
 import warnings
 import torch
 import speechpy
+from tqdm import tqdm
 
 warnings.filterwarnings("ignore", category=UserWarning)
 ### Go to https://github.com/CorentinJ/librispeech-alignments
@@ -53,7 +54,7 @@ def split_on_silences(audio_fpath, words, end_times):
 tot = []
 # Select sets (e.g. dev-clean, train-other-500, ...)
 
-for set_name in ['dev-clean']:
+for set_name in tqdm(['dev-clean']):
     set_dir = os.path.join(librispeech_root, set_name)
     set_dir_audio = os.path.join(librispeech_root_audio, set_name)
 
@@ -61,8 +62,8 @@ for set_name in ['dev-clean']:
         continue
     
     # Select speakers
-    for speaker_id in os.listdir(set_dir):
-        print("-------", speaker_id)
+    for speaker_id in tqdm(os.listdir(set_dir)):
+        #print("-------", speaker_id)
         if speaker_id == '.DS_Store':
             continue
         speaker_dir = os.path.join(set_dir, speaker_id)
