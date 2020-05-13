@@ -1,5 +1,6 @@
 import torch
-mfcc = torch.load('Mfcc_feature.pt')
+import speechpy
+mfccs = torch.load('Mfcc_feature.pt')
 
 print(1)
- 
+

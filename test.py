@@ -108,6 +108,8 @@ for set_name in ['dev-clean']:
 
 
 #np.savez('mat1.npz', name1=tot)
-torch.save(tot, 'Mfcc_features.pt') 
+torch.save(tot, 'Mfcc_features.pt')
+torch.save(tot[0], 'Mfcc_feature.pt')
+
 
         
